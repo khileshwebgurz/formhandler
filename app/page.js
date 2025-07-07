@@ -1,11 +1,11 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-import MyForm from "./myform/page";
+
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <MyForm />
-    </div>
+    <>
+    Hello welcome to form ,
+    <Link href='/myform'>Click here</Link>
+    </>
   );
 }

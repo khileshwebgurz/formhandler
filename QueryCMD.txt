@@ -1,0 +1,29 @@
+//////////////////////////////////////////////////// 1st /////////////////////////////////////////////////////
+
+Everytime we make any table in db and we have id as not null and auto increment , then before inserting any data to table we need to do this , 
+You originally had an id column marked as NOT NULL and PRIMARY KEY, but it didn't have a way to auto-generate values. That caused the null or duplicate key error.
+This setup fixes it by:
+1) Creating a proper counter.
+2) Hooking it to your column.
+3) Making sure it starts from the correct number.
+
+-- 1. Create a sequence
+CREATE SEQUENCE IF NOT EXISTS user_id_seq;
+
+-- 2. Set the default value for the `id` column to use this sequence
+ALTER TABLE public."user"
+ALTER COLUMN id SET DEFAULT nextval('user_id_seq');
+
+-- 3. Ensure the sequence starts after the highest existing ID
+SELECT setval('user_id_seq', COALESCE((SELECT MAX(id) FROM public."user"), 0) + 1);
+
+
+/////////////////////////////////////////////////// 2nd /////////////////////////////////////////////////////////
+
+If table is made like this,
+SELECT * FROM public."user"
+ORDER BY id ASC 
+
+then query should be like this,
+`SELECT * from "user"`
+in double quotes

@@ -4,12 +4,13 @@ import { Readable } from "stream";
 import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
+import pool from "../../../lib/db";
 export const config = {
   api: {
     bodyParser: false,
   },
 };
-const UPLOAD_DIR = path.join(process.cwd(), "uploads");
+const UPLOAD_DIR = path.join(process.cwd(), 'public/uploads');
 
 function webRequestToNodeRequest(req) {
   const readable = Readable.from(req.body);
@@ -41,14 +42,13 @@ function flattenFields(obj) {
 }
 
 function getFilePath(file, type) {
-
-    const folderMap = {
-    image: 'image',
-    resume: 'resume',
-    video: 'video',
+  const folderMap = {
+    image: "image",
+    resume: "resume",
+    video: "video",
   };
 
-  const subfolder = folderMap[type] || 'other';
+  const subfolder = folderMap[type] || "other";
   return moveFileToUploadDir(file, UPLOAD_DIR, subfolder);
 }
 
@@ -76,7 +76,7 @@ function moveFileToUploadDir(fileInput, baseDir, subfolder = "") {
       throw new Error(`Failed to move file: ${error.message}`);
     }
 
-    const relativePath = `/api/uploads/${subfolder}/${fileName}`;
+    const relativePath = `/uploads/${subfolder}/${fileName}`;
     savedPaths.push(relativePath);
   }
 
@@ -85,15 +85,39 @@ function moveFileToUploadDir(fileInput, baseDir, subfolder = "") {
 }
 
 export async function POST(req) {
-  const nodeReq = webRequestToNodeRequest(req);
-  const { fields, files } = await parseForm(nodeReq);
-  const body = flattenFields(fields);
-  let imagePath = getFilePath(files.image, 'image');
-  let resumePath = getFilePath(files.resume , 'resume');
-  let videoPath = getFilePath(files.video , 'video');
+  try {
+    const nodeReq = webRequestToNodeRequest(req);
+    const { fields, files } = await parseForm(nodeReq);
+    const body = flattenFields(fields);
+    let imagePath = getFilePath(files.image, "image");
+    let resumePath = getFilePath(files.resume, "resume");
+    let videoPath = getFilePath(files.video, "video");
 
-  
-  return NextResponse.json({
-    success: false,
-  });
+    const { name, email } = body;
+
+    //  Pass the values securely ($1, $2, ..., $5) to prevent SQL injection.
+    const result = await pool.query(
+      `INSERT INTO public."user" (name, email, image, video, resume)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [name, email, imagePath, videoPath, resumePath]
+    );
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: result.rows[0],
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error creating user with upload:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error",
+      },
+      { status: 500 }
+    );
+  }
 }

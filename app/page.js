@@ -2,10 +2,13 @@
 import Link from "next/link";
 
 export default function Home() {
+  
   return (
     <>
     Hello welcome to form ,
-    <Link href='/myform'>Click here</Link>
+   
+    <Link href='/myFormPage'>Fill Form</Link>
+  
     </>
   );
 }

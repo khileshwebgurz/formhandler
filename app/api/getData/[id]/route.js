@@ -1,10 +1,13 @@
 import pool from "../../../../lib/db";
 
 export async function GET(req, { params }) {
-  const { id } = params;
+  const {id} = await params; //we need to use await with params as of now with next js 15. In Next 15, these APIs have been made asynchronous.
+
   try {
     const result = await pool.query(`SELECT * from users where id = $1`, [id]);
 
+
+    
     if (result.rows.length === 0) {
       return new Response(JSON.stringify({ error: "User not found" }), {
         status: 404,

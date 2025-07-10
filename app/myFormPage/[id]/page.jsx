@@ -7,9 +7,8 @@ import MyForm from "../../myform/page"
 const MyFormPage = () => {
   const data = useParams();
   const userId = data.id;
-  
-
-  const [initialData, setInitialData] = useState(null);
+ 
+  const [initialData, setInitialData] = useState([]);
 
   useEffect(() => {
     if (userId) {
@@ -18,6 +17,8 @@ const MyFormPage = () => {
         .then(data => setInitialData(data));
     }
   }, [userId]);
+
+
 
   return (
     <>

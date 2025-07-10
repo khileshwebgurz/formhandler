@@ -1,7 +1,7 @@
 import pool from "../../../lib/db";
 export async function GET(req) {
   try {
-    const result = await pool.query(`SELECT * from "user"`);
+    const result = await pool.query(`SELECT * from users`);
     return new Response(JSON.stringify(result.rows), {
       status: 200,
       headers: {

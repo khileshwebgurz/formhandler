@@ -47,8 +47,6 @@ const MyForm = ({ initialData, userId }) => {
     }
   }, [initialData, setValue]);
 
-  console.log("dat is", initialData);
-
   const onSubmit = async (data) => {
     const formData = new FormData();
     formData.append("name", data.name);
@@ -57,13 +55,19 @@ const MyForm = ({ initialData, userId }) => {
     formData.append("resume", data.resume[0]);
     formData.append("video", data.video[0]);
 
-    const endPoint = initialData.id ? `/api/update/${initialData.id }` : "/api/upload";
-    const method = initialData.id  ? "PUT" : "POST";
+    const endPoint = initialData.id
+      ? `/api/update/${initialData.id}`
+      : "/api/upload";
+    const method = initialData.id ? "PUT" : "POST";
 
-    const res = await fetch(endPoint, {
-      method,
-      body: formData,
-    });
+    const res = await fetch(
+      endPoint,
+      {
+        method,
+        body: formData,
+      },
+      { credentials: "include" }
+    );
     const result = await res.json();
     console.log(result);
   };
@@ -102,7 +106,6 @@ const MyForm = ({ initialData, userId }) => {
           Video:
           <input type="file" {...register("video")} />
           <p>{errors.video?.message}</p>
-          
           {initialData?.video && (
             <div style={{ marginTop: "10px" }}>
               <p>Current Video:</p>
@@ -113,7 +116,7 @@ const MyForm = ({ initialData, userId }) => {
             </div>
           )}
         </label>
-        <input type="submit" value={initialData.id ? "Update" : "Submit"} />
+        <input type="submit" value={initialData?.id ? "Update" : "Submit"} />
       </form>
     </>
   );

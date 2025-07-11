@@ -2,6 +2,7 @@ import pool from "../../../../lib/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+
 export async function POST(req) {
 
   const SECRET = process.env.JWT_SECRET || "hello@34#";

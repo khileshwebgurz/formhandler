@@ -7,7 +7,7 @@ export default function Home() {
     <>
     Hello welcome to form ,
    
-    <Link href='/myFormPage'>Fill Form</Link>
+    <Link href='/'>Fill Form</Link>
   
     </>
   );

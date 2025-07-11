@@ -11,10 +11,10 @@ export async function POST(req) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const result = await pool.query(
-    `INSERT INTO public.users (username, email, password)
-       VALUES ($1, $2, $3)
+    `INSERT INTO public.users (username, email, password, role)
+       VALUES ($1, $2, $3, $4)
        RETURNING *`,
-    [username, email, hashedPassword]
+    [username, email, hashedPassword, "user"]
   );
 
   return NextResponse.json(
